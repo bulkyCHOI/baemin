@@ -1,16 +1,41 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:baemin/common/component/custom_text_form_field.dart';
 import 'package:baemin/common/const/colors.dart';
+import 'package:baemin/common/const/data.dart';
 import 'package:baemin/common/layout/default_layout.dart';
+import 'package:baemin/common/view/root_tab.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  String username = '';
+  String password = '';
+
+  @override
   Widget build(BuildContext context) {
+
+    final dio = Dio();
+
+    //localhost
+    final emulatorIp = '10.0.0.2:3000';
+    final simulatorIp = '127.0.0.1:3000';
+    // final ip = Platform.isIOS ? simulatorIp : emulatorIp;
+
     return DefaultLayout(
-      child: SingleChildScrollView( //키보드 창이 팝업 되었을때 칸이 작아서 에러가 발생하는 것을 스크롤뷰를 만들어서 쉽게 방지
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,  //입력하다가 스크롤을 한다는 것은 키보드를 없애달라는 사용자의 의도이기 때문에 이 옵션으로 처리
+      child: SingleChildScrollView(
+        //키보드 창이 팝업 되었을때 칸이 작아서 에러가 발생하는 것을 스크롤뷰를 만들어서 쉽게 방지
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        //입력하다가 스크롤을 한다는 것은 키보드를 없애달라는 사용자의 의도이기 때문에 이 옵션으로 처리
         child: SafeArea(
           top: true,
           bottom: false,
@@ -20,26 +45,63 @@ class LoginScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _Title(),
-                const SizedBox(height: 16.0,),
+                const SizedBox(
+                  height: 16.0,
+                ),
                 _SubTitle(),
                 Image.asset(
                   'asset/img/misc/logo.png',
                   width: MediaQuery.of(context).size.width / 3 * 2,
                 ),
-                const SizedBox(height: 16.0,),
+                const SizedBox(
+                  height: 16.0,
+                ),
                 CustomTextFormField(
                   hintText: '이메일을 입력해주세요.',
-                  onChanged: (String value) {},
+                  onChanged: (String value) {
+                    username = value;
+                  },
                 ),
-                const SizedBox(height: 16.0,),
+                const SizedBox(
+                  height: 16.0,
+                ),
                 CustomTextFormField(
                   hintText: '비밀번호를 입력해주세요.',
-                  onChanged: (String value) {},
+                  onChanged: (String value) {
+                    password = value;
+                  },
                   obscureText: true,
                 ),
-                const SizedBox(height: 16.0,),
+                const SizedBox(
+                  height: 16.0,
+                ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    // ID:비밀번호
+                    final rawString = '$username:$password';  //test@codefactory.ai:testtest
+                    print("rawString: "+rawString);
+                    Codec<String, String> stringToBase64 = utf8.fuse(base64);
+                    String token = stringToBase64.encode(rawString);
+
+                    final resp = await dio.post(
+                      'http://127.0.0.1:3000/auth/login',
+                      options: Options(
+                        headers: {
+                          'authorization': 'Basic $token',
+                        },
+                      ),
+                    );
+                    final refreshToken = resp.data['refreshToken'];
+                    final accessToken = resp.data['accessToken'];
+
+                    await storage.write(key: REFRESH_TOKEN_KEY, value: refreshToken);
+                    await storage.write(key: ACCESS_TOKEN_KEY, value: accessToken);
+
+                    // print(refreshToken);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => RootTab(),),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     primary: PRIMARY_COLOR,
                   ),
@@ -48,7 +110,20 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    // final refreshToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RAY29kZWZhY3RvcnkuYWkiLCJzdWIiOiJmNTViMzJkMi00ZDY4LTRjMWUtYTNjYS1kYTlkN2QwZDkyZTUiLCJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTY5MTEyMjA5NSwiZXhwIjoxNjkxMjA4NDk1fQ.ilr1GP2FVq2Ky5fSgJa-MBNaxvImj-ZYUAjDn9Q1brM';
+                    // print("refreshToken: "+refreshToken);
+
+                    final resp = await dio.post(
+                      'http://127.0.0.1:3000/auth/token',
+                      options: Options(
+                        headers: {
+                          'authorization': 'Bearer $REFRESH_TOKEN_KEY',
+                        },
+                      ),
+                    );
+                    print(resp.data);
+                  },
                   style: TextButton.styleFrom(
                     primary: Colors.black,
                   ),
