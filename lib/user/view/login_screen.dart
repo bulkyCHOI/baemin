@@ -23,13 +23,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final dio = Dio();
 
-    //localhost
-    final emulatorIp = '10.0.0.2:3000';
-    final simulatorIp = '127.0.0.1:3000';
-    // final ip = Platform.isIOS ? simulatorIp : emulatorIp;
+
 
     return DefaultLayout(
       child: SingleChildScrollView(
@@ -78,8 +74,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 ElevatedButton(
                   onPressed: () async {
                     // ID:비밀번호
-                    final rawString = '$username:$password';  //test@codefactory.ai:testtest
-                    print("rawString: "+rawString);
+                    final rawString =
+                        '$username:$password'; //test@codefactory.ai:testtest
+                    print("rawString: " + rawString);
                     Codec<String, String> stringToBase64 = utf8.fuse(base64);
                     String token = stringToBase64.encode(rawString);
 
@@ -94,12 +91,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     final refreshToken = resp.data['refreshToken'];
                     final accessToken = resp.data['accessToken'];
 
-                    await storage.write(key: REFRESH_TOKEN_KEY, value: refreshToken);
-                    await storage.write(key: ACCESS_TOKEN_KEY, value: accessToken);
+                    await storage.write(
+                        key: REFRESH_TOKEN_KEY, value: refreshToken);
+                    await storage.write(
+                        key: ACCESS_TOKEN_KEY, value: accessToken);
 
                     // print(refreshToken);
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => RootTab(),),
+                      MaterialPageRoute(
+                        builder: (_) => RootTab(),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -110,20 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 TextButton(
-                  onPressed: () async {
-                    // final refreshToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RAY29kZWZhY3RvcnkuYWkiLCJzdWIiOiJmNTViMzJkMi00ZDY4LTRjMWUtYTNjYS1kYTlkN2QwZDkyZTUiLCJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTY5MTEyMjA5NSwiZXhwIjoxNjkxMjA4NDk1fQ.ilr1GP2FVq2Ky5fSgJa-MBNaxvImj-ZYUAjDn9Q1brM';
-                    // print("refreshToken: "+refreshToken);
-
-                    final resp = await dio.post(
-                      'http://127.0.0.1:3000/auth/token',
-                      options: Options(
-                        headers: {
-                          'authorization': 'Bearer $REFRESH_TOKEN_KEY',
-                        },
-                      ),
-                    );
-                    print(resp.data);
-                  },
+                  onPressed: () {},
                   style: TextButton.styleFrom(
                     primary: Colors.black,
                   ),
