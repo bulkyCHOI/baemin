@@ -31,11 +31,12 @@ class DefaultLayout extends StatelessWidget {
       return AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
         title: Text(
           title!,
           style: TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.w500,
+            fontSize: 20.0,
+            fontWeight: FontWeight.w800,
           ),
 
         ),
