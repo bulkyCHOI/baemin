@@ -46,7 +46,9 @@ class RestaurantScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => RestaurantDetailScreen(),),
+                            builder: (_) => RestaurantDetailScreen(
+                              id: pItem.id,
+                            ),),
                         );
                       },
                       child: RestaurantCard.fromModel(model: pItem));

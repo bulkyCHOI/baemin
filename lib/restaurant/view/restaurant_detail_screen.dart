@@ -1,35 +1,54 @@
 import 'dart:js';
 
+import 'package:baemin/common/const/data.dart';
 import 'package:baemin/common/layout/default_layout.dart';
 import 'package:baemin/product/component/product_card.dart';
 import 'package:baemin/restaurant/component/restaurant_card.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class RestaurantDetailScreen extends StatelessWidget {
-  const RestaurantDetailScreen({Key? key}) : super(key: key);
+  final String id;
+
+  const RestaurantDetailScreen({
+    required this.id,
+    Key? key,
+  }) : super(key: key);
+
+  Future getRestaurantDetail() async {
+    final dio = Dio();
+
+    final accessToken = await storage.read(key: ACCESS_TOKEN_KEY);
+
+    final resp = await dio.get(
+      'http://$ip/restaurant/$id',
+      options: Options(
+        headers: {
+          'authorization': 'Bearer $accessToken',
+        },
+      ),
+    );
+    return resp;
+  }
 
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
-        title: '불타는 떡볶이',
-        child: CustomScrollView(
-          slivers: [
-            renderTop(),
-            renderLable(),
-            renderProduct(),
-          ],
-        )
-
-        // Column(
-        //   children: [
-        //
-        //     Padding(
-        //       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        //       child: ProductCard(),
-        //     ),
-        //   ],
-        // ),
-        );
+      title: '불타는 떡볶이',
+      child: FutureBuilder(
+        future: getRestaurantDetail(),
+        builder: (_, snapshot) {
+          print(snapshot.data);
+          return CustomScrollView(
+            slivers: [
+              renderTop(),
+              renderLable(),
+              renderProduct(),
+            ],
+          );
+        },
+      )
+    );
   }
 
   SliverToBoxAdapter renderTop() {
