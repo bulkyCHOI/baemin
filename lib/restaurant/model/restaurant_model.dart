@@ -1,4 +1,7 @@
-import 'package:baemin/common/const/data.dart';
+import 'package:baemin/common/utils/data_utils.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'restaurant_model.g.dart';
 
 enum RestaurantPriceRange {
   expensive,
@@ -6,10 +9,13 @@ enum RestaurantPriceRange {
   cheap,
 }
 
-
+@JsonSerializable()
 class RestaurantModel {
   final String id;
   final String name;
+  @JsonKey(           //  thumbUrl은 그대로 쓰는 것이 아닌 추가적인 가공이 필요하므로 JsonKey라른 어노테이션을 붙이고 아래와 같이 pathToUrel이라는 함수를 호출하게 하여 변환되도록 사용한다.
+    fromJson: DataUtils.pathToUrl,
+  )
   final String thumbUrl;
   final List<String> tags;
   final RestaurantPriceRange priceRange;
@@ -30,20 +36,25 @@ class RestaurantModel {
     required this.deliveryFee,
   });
 
-  factory RestaurantModel.fromJson({
-    required Map<String, dynamic> json,
-  }) {
-    return RestaurantModel(
-        id: json['id'],
-        name: json['name'],
-        thumbUrl: 'http://$ip${json['thumbUrl']}',
-        tags: List<String>.from(json['tags']),
-        priceRange: RestaurantPriceRange.values
-            .firstWhere((e) => e.name == json['priceRange']),
-        ratings: json['ratings'],
-        ratingsCount: json['ratingsCount'],
-        deliveryTime: json['deliveryTime'],
-        deliveryFee: json['deliveryFee'],
-    );
-  }
+  factory RestaurantModel.fromJson(Map<String, dynamic> json)
+  => _$RestaurantModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RestaurantModelToJson(this);
+
+  // factory RestaurantModel.fromJson({
+  //   required Map<String, dynamic> json,
+  // }) {
+  //   return RestaurantModel(
+  //       id: json['id'],
+  //       name: json['name'],
+  //       thumbUrl: 'http://$ip${json['thumbUrl']}',
+  //       tags: List<String>.from(json['tags']),
+  //       priceRange: RestaurantPriceRange.values
+  //           .firstWhere((e) => e.name == json['priceRange']),
+  //       ratings: json['ratings'],
+  //       ratingsCount: json['ratingsCount'],
+  //       deliveryTime: json['deliveryTime'],
+  //       deliveryFee: json['deliveryFee'],
+  //   );
+  // }
 }

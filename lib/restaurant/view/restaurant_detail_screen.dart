@@ -1,5 +1,3 @@
-import 'dart:js';
-
 import 'package:baemin/common/const/data.dart';
 import 'package:baemin/common/layout/default_layout.dart';
 import 'package:baemin/product/component/product_card.dart';
@@ -40,10 +38,12 @@ class RestaurantDetailScreen extends StatelessWidget {
           future: getRestaurantDetail(),
           builder: (_, AsyncSnapshot<Map<String, dynamic>> snapshot) {
             if (!snapshot.hasData) {
-              return Container();
+              return Center(
+                child: CircularProgressIndicator(),
+              );
             }
             final item = RestaurantDetailModel.fromJson(
-              json: snapshot.data!,
+              snapshot.data!,
             );
 
             return CustomScrollView(
@@ -52,7 +52,9 @@ class RestaurantDetailScreen extends StatelessWidget {
                   model: item,
                 ),
                 renderLable(),
-                renderProduct(),
+                renderProduct(
+                  products: item.products
+                ),
               ],
             );
           },
@@ -74,18 +76,22 @@ class RestaurantDetailScreen extends StatelessWidget {
     );
   }
 
-  SliverPadding renderProduct() {
+  SliverPadding renderProduct({
+  required List<RestaurantProductModel> products
+}) {
     return SliverPadding(
       padding: EdgeInsets.symmetric(horizontal: 16.0),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (context, index) {
+            final model = products[index];
+
             return Padding(
               padding: const EdgeInsets.only(top: 16.0),
-              child: ProductCard(),
+              child: ProductCard.fromModel(model: model),
             );
           },
-          childCount: 10,
+          childCount: products.length,
         ),
       ),
     );
