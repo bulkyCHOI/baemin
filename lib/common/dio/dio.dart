@@ -53,10 +53,15 @@ class CustomInterceptor extends Interceptor {
         'authorization': 'Bearer $token',
       });
     }
-
     super.onRequest(options, handler);
   }
 // 2) 응받을 받을때
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    print('[RES] [${response.requestOptions.method}] ${response.requestOptions.uri}');
+
+    return super.onResponse(response, handler);
+  }
 // #) 에러가 났을때
 @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
@@ -102,11 +107,9 @@ class CustomInterceptor extends Interceptor {
        return handler.resolve(response);
 
       }on DioError catch(e){
-        return handler.reject(err); //에러를 돌려준다.
+        return handler.reject(e); //에러를 돌려준다.
       }
     }
-
-
-    super.onError(err, handler);
+    return super.onError(err, handler);
   }
 }
