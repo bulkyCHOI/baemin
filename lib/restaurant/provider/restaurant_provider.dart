@@ -18,7 +18,7 @@ class RestaurantStateNotifier extends StateNotifier<CursorPaginationBase> { //ba
     paginate(); //constructor에 추가하여 바로 실행되도록
   }
 
-  paginate({
+  void paginate({
     int fetchCount = 20,
     bool fetchMore = false, //true 추가 데이터 가져오기, false 새로고침(현재 상태를 덮어씌움)
     bool forceRefetch = false,  //강제로 다시 로딩하기 true = CursorPaginationLoading()
@@ -31,5 +31,16 @@ class RestaurantStateNotifier extends StateNotifier<CursorPaginationBase> { //ba
     // 3) CursorPaginationError - 에러가 있는 상태
     // 4) CursorPaginationRefetching - 첫번째 페이지부터 다시 데이터를 가져올때
     // 5) CursorPaginationFetchMore - 추가 데이터를 paginate 해오라는 요청을 받았을때
+
+    // 바로 반환하는 상황
+    // 1) hasMore = false (기존 상태에서 이미 다음 데이터가 없다는 값을 들고있다면)
+    // 2) 로딩중 - fetchMore = true
+    //    fetchMore가 아닐때 - 새로고침의 의도가 있다.
+    if(state is CursorPagination && !forceRefetch){
+      final pState = state as CursorPagination; //캐스팅을 해줌 캐스팅 하기 전에는 state가 CursorPagiantion인줄은 모르므로 강제적으로 변환해준다. 반드시 그 클래스라고 확정적일 경우에만 사용하기
+      if(!pState.meta.hasMore){
+        return;
+      }
+    }
   }
 }
