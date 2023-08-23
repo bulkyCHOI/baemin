@@ -47,14 +47,14 @@ class CursorPaginationMeta {
       _$CursorPaginationMetaFromJson(json);
 }
 
-class CursorPaginationRefetching extends CursorPagination{  //다시 처음부터 불러오기 = 새로고침 상태를 나타내는 클래스
+class CursorPaginationRefetching<T> extends CursorPagination<T>{  //다시 처음부터 불러오기 = 새로고침 상태를 나타내는 클래스
   CursorPaginationRefetching({
     required super.meta,
     required super.data,
   });
 }
 
-class CursorPaginationFetchingMore extends CursorPagination{  //페이지네이션 다음 데이터를 요청할대의 상태를 나타내는 클래스
+class CursorPaginationFetchingMore<T> extends CursorPagination<T>{  //페이지네이션 다음 데이터를 요청할대의 상태를 나타내는 클래스
   CursorPaginationFetchingMore({
     required super.meta,
     required super.data,
