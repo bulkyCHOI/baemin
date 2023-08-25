@@ -5,18 +5,19 @@ import 'package:baemin/restaurant/repository/restaurant_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final restaurantDetailProvider =
-    Provider.family<RestaurantModel?, String>((ref, id) {
-      final state = ref.watch(restaurantProvider);
+Provider.family<RestaurantModel?, String>((ref, id) {
+  final state = ref.watch(restaurantProvider);
 
-      if(state is! CursorPagination<RestaurantModel>){  // is로 해서 as를 쓴것처럼 캐스팅이 되었다.
-        return null;
-      }
+  if (state is! CursorPagination) {
+    // is로 해서 as를 쓴것처럼 캐스팅이 되었다.
+    return null;
+  }
 
-      return state.data.firstWhere((element) => element.id == id);
-    });
+  return state.data.firstWhere((element) => element.id == id);
+});
 
 final restaurantProvider =
-    StateNotifierProvider<RestaurantStateNotifier, CursorPaginationBase>((ref) {
+StateNotifierProvider<RestaurantStateNotifier, CursorPaginationBase>((ref) {
   final repository = ref.watch(restaurantRepositoryProvider);
   final notifier = RestaurantStateNotifier(repository: repository);
   return notifier;
@@ -33,7 +34,7 @@ class RestaurantStateNotifier extends StateNotifier<CursorPaginationBase> {
     paginate(); //constructor에 추가하여 바로 실행되도록
   }
 
-  void paginate({
+  Future<void> paginate({
     int fetchCount = 20,
     bool fetchMore = false, //true 추가 데이터 가져오기, false 새로고침(현재 상태를 덮어씌움)
     bool forceRefetch = false, //강제로 다시 로딩하기 true = CursorPaginationLoading()
@@ -120,5 +121,33 @@ class RestaurantStateNotifier extends StateNotifier<CursorPaginationBase> {
     } catch (e) {
       state = CursorPaginationError(message: '데이터를 가져오지 못했습니다.');
     }
+  }
+
+  getDetail({
+    required String id,
+  }) async {
+    //만약에 아직 데이터가 하다도 없는 상태라면 == CursorPagination이 아니라면
+    //데이터를 가져오는 시도를 한다.
+    if (state is! CursorPagination) {
+      await this.paginate();
+    }
+
+    //state가 CursorPagination이 아닐때 그냥 return
+    if (state is! CursorPagination) {
+      return;
+    }
+
+    final pState = state as CursorPagination;
+
+    final resp = await repository.getRestaurantDetail(id: id);
+
+    //예시
+    //[RestaurantModel(1), RestaurantModel(2), RestaurantModel(3)]
+    //id:2인 element의 DetailModel을 가져와라
+    //getDetail(id:2);
+    //[RestaurantModel(1), RestaurantDetailModel(2), RestaurantModel(3)]
+    state = pState.copyWith(
+      data: pState.data.map<RestaurantModel>((e) => e.id == id ? resp : e).toList(),
+    );
   }
 }

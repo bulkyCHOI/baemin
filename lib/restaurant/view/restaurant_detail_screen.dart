@@ -7,7 +7,7 @@ import 'package:baemin/restaurant/provider/restaurant_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RestaurantDetailScreen extends ConsumerWidget {
+class RestaurantDetailScreen extends ConsumerStatefulWidget {
   final String id;
 
   const RestaurantDetailScreen({
@@ -16,9 +16,23 @@ class RestaurantDetailScreen extends ConsumerWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RestaurantDetailScreen> createState() =>
+      _RestaurantDetailScreenState();
+}
+
+class _RestaurantDetailScreenState
+    extends ConsumerState<RestaurantDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    ref.read(restaurantProvider.notifier).getDetail(id: widget.id);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     //상태관리에 의해 캐쉬되고 있는 데이터에서 가져온다.
-    final state = ref.watch(restaurantDetailProvider(id));
+    final state = ref.watch(restaurantDetailProvider(widget.id));
 
     if (state == null) {
       return DefaultLayout(
@@ -35,10 +49,11 @@ class RestaurantDetailScreen extends ConsumerWidget {
           renderTop(
             model: state,
           ),
-          // renderLable(),
-          // renderProduct(
-          //   products: snapshot.data!.products,
-          // ),
+          if (state is RestaurantDetailModel) renderLable(),
+          if (state is RestaurantDetailModel)
+            renderProduct(
+              products: state.products,
+            ),
         ],
       ),
     );
