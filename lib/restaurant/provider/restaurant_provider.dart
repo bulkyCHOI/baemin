@@ -1,7 +1,19 @@
 import 'package:baemin/common/model/cursor_pagination_model.dart';
 import 'package:baemin/common/model/pagination_params.dart';
+import 'package:baemin/restaurant/model/restaurant_model.dart';
 import 'package:baemin/restaurant/repository/restaurant_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final restaurantDetailProvider =
+    Provider.family<RestaurantModel?, String>((ref, id) {
+      final state = ref.watch(restaurantProvider);
+
+      if(state is! CursorPagination<RestaurantModel>){  // is로 해서 as를 쓴것처럼 캐스팅이 되었다.
+        return null;
+      }
+
+      return state.data.firstWhere((element) => element.id == id);
+    });
 
 final restaurantProvider =
     StateNotifierProvider<RestaurantStateNotifier, CursorPaginationBase>((ref) {
