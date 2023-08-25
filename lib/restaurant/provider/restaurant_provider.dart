@@ -42,5 +42,14 @@ class RestaurantStateNotifier extends StateNotifier<CursorPaginationBase> { //ba
         return;
       }
     }
+    
+    final isLoading = state is CursorPaginationLoading;
+    final isRefetching = state is CursorPaginationRefetching;
+    final isFetchingMore = state is CursorPaginationFetchingMore;
+    
+    // 2)번 상황
+    if(fetchMore && (isLoading || isRefetching || isFetchingMore)){
+      return;
+    }
   }
 }
