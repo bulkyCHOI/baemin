@@ -1,33 +1,65 @@
-import 'package:baemin/common/const/data.dart';
-import 'package:baemin/common/dio/dio.dart';
 import 'package:baemin/common/model/cursor_pagination_model.dart';
 import 'package:baemin/restaurant/component/restaurant_card.dart';
-import 'package:baemin/restaurant/model/restaurant_model.dart';
 import 'package:baemin/restaurant/provider/restaurant_provider.dart';
-import 'package:baemin/restaurant/repository/restaurant_repository.dart';
 import 'package:baemin/restaurant/view/restaurant_detail_screen.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RestaurantScreen extends ConsumerWidget {
+class RestaurantScreen extends ConsumerStatefulWidget {
   const RestaurantScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RestaurantScreen> createState() => _RestaurantScreenState();
+}
+
+class _RestaurantScreenState extends ConsumerState<RestaurantScreen> {
+  //스크롤을 내리면서 어디쯤 왓는지 확인하기 위해 컨트롤러를 추가한다.
+  final ScrollController controller = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller.addListener(scrollListener);
+  }
+
+  void scrollListener() {
+    //현재 위치가 최대 길이보다 조금 덜되는 위치까지 왔다면, 새로운 뎅디터를 추가 요청
+    // 현재위치 > 최대길이 - 300 픽셀 이면 추가요청
+    if (controller.offset > controller.position.maxScrollExtent - 300) {
+      ref.read(restaurantProvider.notifier).paginate(fetchMore: true);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final data = ref.watch(restaurantProvider);
 
-    if (data is CursorPaginationLoading) {  //로딩중인 상태의 클래스이면
+    //완전 처음 올딩일때
+    if (data is CursorPaginationLoading) {
+      //로딩중인 상태의 클래스이면
       return Center(
         child: CircularProgressIndicator(),
       );
     }
 
-    final cp = data as CursorPagination;  //임시로 일단 이렇게 처리해서 아래 데이터를 유효하게 하자
+    //에러
+    if (data is CursorPaginationError) {
+      return Center(
+        child: Text(data.message),
+      );
+    }
+
+    // CursorPagination
+    // CursorPaginationFetchingMore
+    // CursorPaginationRefetching
+
+    final cp = data as CursorPagination; //임시로 일단 이렇게 처리해서 아래 데이터를 유효하게 하자
 
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: ListView.separated(
+          controller: controller,
           itemCount: cp.data.length,
           itemBuilder: (_, index) {
             final pItem = cp.data[index];

@@ -67,7 +67,7 @@ class RestaurantStateNotifier extends StateNotifier<CursorPaginationBase> {
           data: pState.data,
         );
 
-        paginationParams.copyWith(
+        paginationParams = paginationParams.copyWith(
           after: pState.data.last.id,
         );
       }
