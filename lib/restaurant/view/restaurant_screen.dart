@@ -60,8 +60,21 @@ class _RestaurantScreenState extends ConsumerState<RestaurantScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: ListView.separated(
           controller: controller,
-          itemCount: cp.data.length,
+          itemCount: cp.data.length + 1,  //맨 마지막에 로딩바를 보여주기 위해 하나 추가해놓고
           itemBuilder: (_, index) {
+            if (index == cp.data.length) {  //로딩처릴르 여기서 해준다.
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                child: Center(
+                  child: data is CursorPaginationFetchingMore //아래에 데이터가 더 있다면
+                      ? CircularProgressIndicator() //로딩을 표시해주고
+                      : Text('데이터가 마지막입니다 ㅠㅠ'), //없다면 메시지를 보여준다.
+                ),
+              );
+            }
             final pItem = cp.data[index];
 
             return GestureDetector(
