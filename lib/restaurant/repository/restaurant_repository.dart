@@ -2,6 +2,7 @@ import 'package:baemin/common/const/data.dart';
 import 'package:baemin/common/dio/dio.dart';
 import 'package:baemin/common/model/cursor_pagination_model.dart';
 import 'package:baemin/common/model/pagination_params.dart';
+import 'package:baemin/common/repository/base_pagination_repository.dart';
 import 'package:baemin/restaurant/model/restaurant_detail_model.dart';
 import 'package:baemin/restaurant/model/restaurant_model.dart';
 import 'package:dio/dio.dart' hide Headers; //retrofit에도 중복선언되어 있기 때문에 제외시켜준다.
@@ -18,7 +19,8 @@ final restaurantRepositoryProvider = Provider<RestaurantRepository>((ref) {
 });
 
 @RestApi()
-abstract class RestaurantRepository {
+abstract class RestaurantRepository
+    implements IBasePaginationRepository<RestaurantModel> {
   // http://$ip/restaurant
   factory RestaurantRepository(Dio dio, {String baseUrl}) =
       _RestaurantRepository;
@@ -28,7 +30,8 @@ abstract class RestaurantRepository {
     'accessToken': 'true',
   })
   Future<CursorPagination<RestaurantModel>> paginate({
-    @Queries() PaginationParams? paginationParams = const PaginationParams(),  //build time에 정해지게 하기 위해서 const
+    @Queries() PaginationParams? paginationParams =
+        const PaginationParams(), //build time에 정해지게 하기 위해서 const
   });
 
   @GET('/{id}')
