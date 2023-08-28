@@ -13,7 +13,6 @@ part 'restaurant_rating_repository.g.dart';
 final restaurantRatingRepositioryProvider =
     Provider.family<RestaurantRatingRepository, String>((ref, id) {
   final Dio dio = ref.watch(dioProvider);
-
   return RestaurantRatingRepository(dio,
       baseUrl: 'http://$ip/restaurant/$id/rating');
 });
