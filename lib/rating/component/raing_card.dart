@@ -1,5 +1,6 @@
 import 'package:baemin/common/const/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart'; //mapIndexed를 사용가능함.
 
 class RatingCard extends StatelessWidget {
   //NetworkImage or AssetImage
@@ -36,12 +37,22 @@ class RatingCard extends StatelessWidget {
           rating: rating,
           email: email,
         ),
-        const SizedBox(height: 8.0,),
+        const SizedBox(
+          height: 8.0,
+        ),
         _Body(
           content: content,
         ),
-        const SizedBox(height: 8.0,),
-        _Images(),
+        const SizedBox(
+          height: 8.0,
+        ),
+        if (images.length > 0)
+          SizedBox(
+            height: 100,
+            child: _Images(
+              images: images,
+            ),
+          ),
       ],
     );
   }
@@ -124,10 +135,31 @@ class _Body extends StatelessWidget {
 }
 
 class _Images extends StatelessWidget {
-  const _Images({Key? key}) : super(key: key);
+  final List<Image> images;
+
+  const _Images({
+    required this.images,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return ListView(
+      //좌우 스크롤
+      scrollDirection: Axis.horizontal,
+      children: images
+          .mapIndexed(
+            (index, e) => Padding(
+              //맨 마지막은 패딩 0로 만들기 위해서
+              padding:
+                  EdgeInsets.only(right: index == images.length - 1 ? 0 : 16.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: e,
+              ),
+            ),
+          )
+          .toList(),
+    );
   }
 }
