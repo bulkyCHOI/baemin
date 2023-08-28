@@ -1,3 +1,4 @@
+import 'package:baemin/common/model/model_with_id.dart';
 import 'package:baemin/common/utils/data_utils.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -10,7 +11,7 @@ enum RestaurantPriceRange {
 }
 
 @JsonSerializable()
-class RestaurantModel {
+class RestaurantModel implements IModelWithId{
   final String id;
   final String name;
   @JsonKey(           //  thumbUrl은 그대로 쓰는 것이 아닌 추가적인 가공이 필요하므로 JsonKey라른 어노테이션을 붙이고 아래와 같이 pathToUrel이라는 함수를 호출하게 하여 변환되도록 사용한다.
