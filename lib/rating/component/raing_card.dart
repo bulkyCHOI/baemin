@@ -31,8 +31,16 @@ class RatingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _Header(avatarImage: avatarImage, rating: rating, email: email),
-        _Body(),
+        _Header(
+          avatarImage: avatarImage,
+          rating: rating,
+          email: email,
+        ),
+        const SizedBox(height: 8.0,),
+        _Body(
+          content: content,
+        ),
+        const SizedBox(height: 8.0,),
         _Images(),
       ],
     );
@@ -89,11 +97,29 @@ class _Header extends StatelessWidget {
 }
 
 class _Body extends StatelessWidget {
-  const _Body({Key? key}) : super(key: key);
+  final String content;
+
+  const _Body({
+    required this.content,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Row(
+      children: [
+        //Flexible에 있는 텍스트는 영역을을 넘으면 다음줄로 넘어간다.
+        Flexible(
+          child: Text(
+            content,
+            style: TextStyle(
+              color: BODY_TEXT_COLOR,
+              fontSize: 14.0,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
