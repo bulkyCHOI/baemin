@@ -1,5 +1,6 @@
 import 'package:baemin/common/layout/default_layout.dart';
 import 'package:baemin/product/component/product_card.dart';
+import 'package:baemin/rating/component/raing_card.dart';
 import 'package:baemin/restaurant/component/restaurant_card.dart';
 import 'package:baemin/restaurant/model/restaurant_detail_model.dart';
 import 'package:baemin/restaurant/model/restaurant_model.dart';
@@ -56,6 +57,17 @@ class _RestaurantDetailScreenState
             renderProduct(
               products: state.products,
             ),
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            sliver: SliverToBoxAdapter(
+                child: RatingCard(
+              avatarImage: AssetImage('asset/img/logo/codefactory_logo.png'),
+              images: [],
+              rating: 4,
+              email: 'test@codefactory.ai',
+              content: '맛있습니다.',
+            )),
+          )
         ],
       ),
     );
