@@ -1,5 +1,6 @@
 import 'package:baemin/common/layout/default_layout.dart';
 import 'package:baemin/common/model/cursor_pagination_model.dart';
+import 'package:baemin/common/utils/pagination_utils.dart';
 import 'package:baemin/product/component/product_card.dart';
 import 'package:baemin/rating/component/raing_card.dart';
 import 'package:baemin/rating/model/rating_model.dart';
@@ -27,11 +28,23 @@ class RestaurantDetailScreen extends ConsumerStatefulWidget {
 
 class _RestaurantDetailScreenState
     extends ConsumerState<RestaurantDetailScreen> {
+  final ScrollController controller = ScrollController();
+
   @override
   void initState() {
     super.initState();
 
     ref.read(restaurantProvider.notifier).getDetail(id: widget.id);
+    controller.addListener(listener);
+  }
+
+  void listener() {
+    PaginationUtils.paginate(
+      controller: controller,
+      provider: ref.read(
+        restaurantRatingProvider(widget.id).notifier,
+      ),
+    );
   }
 
   @override
@@ -51,6 +64,7 @@ class _RestaurantDetailScreenState
     return DefaultLayout(
       title: state.name,
       child: CustomScrollView(
+        controller: controller,
         slivers: [
           renderTop(
             model: state,
