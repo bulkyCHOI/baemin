@@ -1,6 +1,6 @@
 import 'package:baemin/common/const/colors.dart';
 import 'package:baemin/common/layout/default_layout.dart';
-import 'package:baemin/rating/model/view/Product_tab.dart';
+import 'package:baemin/product/view/product_screen.dart';
 import 'package:baemin/restaurant/view/restaurant_screen.dart';
 import 'package:flutter/material.dart';
 
