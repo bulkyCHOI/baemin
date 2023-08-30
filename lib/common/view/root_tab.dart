@@ -1,5 +1,6 @@
 import 'package:baemin/common/const/colors.dart';
 import 'package:baemin/common/layout/default_layout.dart';
+import 'package:baemin/rating/model/view/Product_tab.dart';
 import 'package:baemin/restaurant/view/restaurant_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -42,7 +43,7 @@ SingleTickerProviderStateMixin {
         controller: controller,
         children: [
           RestaurantScreen(),
-          Center(child: Container(child: Text('음식'))),
+          ProductTab(),
           Center(child: Container(child: Text('주문'))),
           Center(child: Container(child: Text('프로필'))),
         ],

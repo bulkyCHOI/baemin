@@ -70,11 +70,12 @@ class _RestaurantDetailScreenState
             model: state,
           ),
           if (state is! RestaurantDetailModel) renderLoading(),
-          if (state is RestaurantDetailModel) renderLable(),
+          if (state is RestaurantDetailModel) renderLable('메뉴'),
           if (state is RestaurantDetailModel)
             renderProduct(
               products: state.products,
             ),
+
           if (ratingsState is CursorPagination<RatingModel>)
             renderRatings(models: ratingsState.data),
         ],
@@ -128,12 +129,12 @@ class _RestaurantDetailScreenState
     );
   }
 
-  SliverPadding renderLable() {
+  SliverPadding renderLable(String s) {
     return SliverPadding(
       padding: EdgeInsets.symmetric(horizontal: 16.0),
       sliver: SliverToBoxAdapter(
         child: Text(
-          '메뉴',
+          s,
           style: TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.w500,
